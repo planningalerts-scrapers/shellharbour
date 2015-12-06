@@ -8,6 +8,6 @@ Shellharbour Council involves the followings
 * Clearly defined data within a row - Acceptable
 * Some record have missing 'Address'
 
-## There is no submitted data available, therefore, using Exhibition end date minus 14 days equals to submitted date is used.
+## There is no 'submitted date' available, therefore, using 'Notification end date' minus 14 days equals to 'submitted date' is used.
 
 Enjoy
