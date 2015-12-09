@@ -17,7 +17,7 @@ $dom = file_get_html($da_page);
 foreach($dom->find("tr[bgcolor=#DEE1E7]") as $record ) {
 
     $application = array('council_reference' => '', 'address' => '', 'description' => '', 'info_url' => '', 
-                         'comment_url' => '', 'date_scraped' => '', 'date_received' => '');
+                         'comment_url' => '', 'date_scraped' => '', 'on_notice_to' => '');
 
     foreach($record->find('tr') as $gem) {
         if ((!is_null($gem->find("td", 0))) && (!is_null($gem->find("td", 1)))) {
@@ -42,9 +42,8 @@ foreach($dom->find("tr[bgcolor=#DEE1E7]") as $record ) {
                 $application['description'] = $value;
                 break;
             case 'Notification Expires:' :
-                $date_received = substr($value, 4);
-                $application['on_notice_to']  = date('Y-m-d', strtotime($date_received));
-                $application['date_received'] = date('Y-m-d', strtotime($date_received) - (14*24*60*60));   # Submit date = Notification - 14 days (Guessing??)               
+                $tempstr = substr($value, 4);
+                $application['on_notice_to']  = date('Y-m-d', strtotime($tempstr));
                 break;                
         }
     }

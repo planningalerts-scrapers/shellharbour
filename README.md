@@ -6,8 +6,6 @@ Shellharbour Council involves the followings
 * Pagnation - No
 * Javascript - No
 * Clearly defined data within a row - Acceptable
-* Some record have missing 'Address'
-
-## There is no 'submitted date' available, therefore, using 'Notification end date' minus 14 days equals to 'submitted date' is used.
+* Some record have missing 'Address' and will replaced with a single space
 
 Enjoy
