@@ -8,51 +8,28 @@ date_default_timezone_set('Australia/Sydney');
 ###
 ### Main code start here
 ###
-$url_base = "http://www.oasis.shellharbour.nsw.gov.au";
-$da_page  = $url_base . "/index.pl?page=3442";
+$url_base    = "https://eservices.shellharbour.nsw.gov.au/T1PRProd/WebApps/eProperty/P1/PublicNotices/";
+$da_page     = $url_base . "AllPublicNotices.aspx?r=SCC.WEBGUEST&f=SCC.ESB.PUBNOTAL.ENQ";
+$comment_url = "http://www.shellharbour.nsw.gov.au/Contact-Us.aspx";
 
 # Get the data that I want within the page
 $dom = file_get_html($da_page);
 
-foreach($dom->find("tr[bgcolor=#DEE1E7]") as $record ) {
-
-    $application = array('council_reference' => '', 'address' => '', 'description' => '', 'info_url' => '', 
-                         'comment_url' => '', 'date_scraped' => '', 'on_notice_to' => '');
-
-    foreach($record->find('tr') as $gem) {
-        if ((!is_null($gem->find("td", 0))) && (!is_null($gem->find("td", 1)))) {
-            $key = trim($gem->find("td", 0)->plaintext);
-            $value = preg_replace('/\s+/', ' ', trim($gem->find("td", 1)->plaintext));
-        }
-
-        switch ($key) {
-            case 'DA Number:' :
-                $value = str_replace("Lodge a Submission", "", $value);
-                $application['council_reference'] = $value;
-                $application['comment_url']       = $url_base . $gem->find("a", 0)->href;
-                break;            
-            case 'Address:' :
-                if (!empty($value)) {
-                    $application['address'] = $value . ", Australia";
-                } else {
-                    $application['address'] = " ";
-                }
-                break;
-            case 'Description:' :
-                $application['description'] = $value;
-                break;
-            case 'Notification Expires:' :
-                $tempstr = substr($value, 4);
-                $application['on_notice_to']  = date('Y-m-d', strtotime($tempstr));
-                break;                
-        }
-    }
-    $application['info_url'] = $da_page;
-    $application['date_scraped'] = date('Y-m-d');
+foreach($dom->find("table[class=grid]") as $record ) {
+    $application = [];
+   
+    $application['council_reference'] = trim($record->find("td", 1)->plaintext);
+    $application['address']           = trim($record->find("td", 5)->plaintext);
+    $application['description']       = trim($record->find("td",3)->plaintext);
+    $application['info_url']          = $url_base . html_entity_decode($record->find("a", 0)->href);
+    $application['comment_url']       = $comment_url;
+    $application['date_scraped']      = date('Y-m-d');
+    $date = explode("/", $record->find("td", 7)->plaintext);
+    $application['on_notice_to']      = $date[2]."-".$date[1]."-".$date[0];
 
     # Check if record exist, if not, INSERT, else do nothing
     $existingRecords = scraperwiki::select("* from data where `council_reference`='" . $application['council_reference'] . "'");
-    if ((count($existingRecords) == 0) && ($application['council_reference'] !== 'Not on file')) {
+    if ( count($existingRecords) == 0 ) {
         print ("Saving record " . $application['council_reference'] . "\n");
         # print_r ($application);
         scraperwiki::save(array('council_reference'), $application);
