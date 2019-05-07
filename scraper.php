@@ -27,15 +27,9 @@ foreach($dom->find("table[class=grid]") as $record ) {
     $date = explode("/", $record->find("td", 7)->plaintext);
     $application['on_notice_to']      = $date[2]."-".$date[1]."-".$date[0];
 
-    # Check if record exist, if not, INSERT, else do nothing
-    $existingRecords = scraperwiki::select("* from data where `council_reference`='" . $application['council_reference'] . "'");
-    if ( count($existingRecords) == 0 ) {
-        print ("Saving record " . $application['council_reference'] . "\n");
-        # print_r ($application);
-        scraperwiki::save(array('council_reference'), $application);
-    } else {
-        print ("Skipping already saved record or ignore corrupted data - " . $application['council_reference'] . "\n");
-    }
+    print ("Saving record " . $application['council_reference'] . "\n");
+    # print_r ($application);
+    scraperwiki::save(array('council_reference'), $application);
 
 }
 
